@@ -1,6 +1,7 @@
 import { resumeService } from '../services/resumes.service.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
+import { NotFound } from '../errors/http.error.js';
 
 class ResumesController {
   createResume = async (req, res, next) => {
@@ -42,10 +43,7 @@ class ResumesController {
       const data = await resumeService.getResumeById(id, authorId);
 
       if (!data) {
-        return res.status(HTTP_STATUS.NOT_FOUND).json({
-          status: HTTP_STATUS.NOT_FOUND,
-          message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
-        });
+        throw new NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
       }
 
       res.status(HTTP_STATUS.OK).json({
@@ -71,12 +69,6 @@ class ResumesController {
         data,
       });
     } catch (error) {
-      if (error.message === 'Resume not found') {
-        return res.status(HTTP_STATUS.NOT_FOUND).json({
-          status: HTTP_STATUS.NOT_FOUND,
-          message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
-        });
-      }
       next(error);
     }
   };
@@ -93,12 +85,6 @@ class ResumesController {
         data: { id },
       });
     } catch (error) {
-      if (error.message === 'Resume not found') {
-        return res.status(HTTP_STATUS.NOT_FOUND).json({
-          status: HTTP_STATUS.NOT_FOUND,
-          message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
-        });
-      }
       next(error);
     }
   };

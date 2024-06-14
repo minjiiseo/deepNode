@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { MESSAGES } from '../../constants/message.constant.js';
 import { MIN_RESUME_LENGTH } from '../../constants/resume.constant.js';
+import { BadRequest } from '../../errors/http.error.js';
 
 const schema = Joi.object({
   title: Joi.string(),
@@ -18,6 +19,6 @@ export const updateResumeValidator = async (req, res, next) => {
     await schema.validateAsync(req.body);
     next();
   } catch (error) {
-    next(error);
+    next(new BadRequest(error.details[0].message));
   }
 };
