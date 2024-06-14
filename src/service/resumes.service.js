@@ -1,4 +1,7 @@
+// src/services/resumes.service.js
+
 import { resumeRepository } from '../repositories/resumes.repository.js';
+import { HttpError } from '../errors/http.error.js';
 
 class ResumeService {
   createResume = async (authorId, title, content) => {
@@ -15,13 +18,17 @@ class ResumeService {
   };
 
   getResumeById = async (id, authorId) => {
-    return resumeRepository.findUnique({ id, authorId });
+    const resume = await resumeRepository.findUnique({ id, authorId });
+    if (!resume) {
+      throw new HttpError.NotFound('Resume not found');
+    }
+    return resume;
   };
 
   updateResume = async (id, authorId, title, content) => {
     const resume = await resumeRepository.findUnique({ id, authorId });
     if (!resume) {
-      throw new Error('Resume not found');
+      throw new HttpError.NotFound('Resume not found');
     }
 
     return resumeRepository.update({ id, authorId }, { title, content });
@@ -30,7 +37,7 @@ class ResumeService {
   deleteResume = async (id, authorId) => {
     const resume = await resumeRepository.findUnique({ id, authorId });
     if (!resume) {
-      throw new Error('Resume not found');
+      throw new HttpError.NotFound('Resume not found');
     }
 
     return resumeRepository.delete({ id, authorId });
